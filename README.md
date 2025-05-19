@@ -83,12 +83,12 @@ FlywheelControl includes:
 
 ---
 
-## 📦 Installation (Once Published)
+## 📦 Installation
 
 Add this to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/yourname/FlywheelControl.git", from: "1.0.0")
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.0.0")
 ```
 
 Then:
