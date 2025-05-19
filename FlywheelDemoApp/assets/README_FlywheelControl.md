@@ -81,7 +81,7 @@ FlywheelControl { delta in
 
 ## 🔧 Requirements
 
-- iOS 17.0+  
+- iOS 15.0+  
 - macOS 12.0+  
 - Swift 5.9+  
 - SwiftUI + Combine
@@ -93,6 +93,7 @@ FlywheelControl { delta in
 FlywheelControl includes:
 
 - 🔍 SwiftUI Previews  
+- ✅ Unit tests for `ZoomValueManager` logic  
 - 🧱 Modular design (no app dependencies)
 
 ---
