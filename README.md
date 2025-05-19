@@ -1,5 +1,9 @@
 # FlywheelControl
 
+[![SwiftPM Compatible](https://img.shields.io/badge/SwiftPM-compatible-blue)](https://swiftpackageindex.com/aweiner42/FlywheelControl)
+[![Platforms](https://img.shields.io/badge/platforms-iOS%20%7C%20macOS-blue)](https://swiftpackageindex.com/aweiner42/FlywheelControl)
+
+A tactile, momentum-based radial control for SwiftUI — inspired by analog flywheels.
 ![FlywheelControl Logo](Assets/FlywheelIcon.png)
 
 A SwiftUI-based, physics-inspired radial scroller for zoom, scrub, and value adjustments.  
@@ -46,6 +50,25 @@ FlywheelControl { delta in
 - You can bind it to any logic — zoom, volume, timeline scrubbing, etc.
 
 ---
+
+## 📦 Installation
+
+To add FlywheelControl to your Swift package:
+
+### Swift Package Manager
+
+In Xcode:
+
+1. Go to **File → Add Packages…**
+2. Enter the URL:https://github.com/aweiner42/FlywheelControl
+3. Choose the latest version (e.g., `1.0.0`)
+
+Or add it to your `Package.swift`:
+
+```swift
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.0.0")
+Then:
+import FlywheelControl
 
 ## 🎯 Example Integration
 
