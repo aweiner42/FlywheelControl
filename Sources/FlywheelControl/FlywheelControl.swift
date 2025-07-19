@@ -10,9 +10,13 @@ import CoreHaptics
 import Combine
 
 public struct FlywheelControl: View {
-    public var onDelta: (CGFloat) -> Void
+    public var trackImage: Image?
 
-    @State private var angle: Double = 0.0
+    @Binding var position: Double
+    @Binding var maxOffset: Double // passed from container
+    @Binding var minOffset: Double // passed from container
+    @Binding var spanCM: Double // passed from container
+
     @State private var velocity: Double = 0.0
     @State private var isDragging = false
     @State private var engine: CHHapticEngine?
@@ -20,37 +24,57 @@ public struct FlywheelControl: View {
     @State private var lastTranslation: CGFloat = 0.0
     @State private var timer: Timer?
 
-    let width: CGFloat = 40
-    let height: CGFloat = 225
     let tickSpacing: Double = 20
     let tickCount = Int(180 / 10)
-    let updateInterval = 1.0 / 60.0
+    let updateInterval = 1.0 / 30.0
 
-    public init(onDelta: @escaping (CGFloat) -> Void) {
-        self.onDelta = onDelta
+    public init(trackImage: Image? = nil, position: Binding<Double>, maxOffset: Binding<Double>, minOffset: Binding<Double>, spanCM: Binding<Double>) {
+        self.trackImage = trackImage
+        self._position = position
+        self._maxOffset = maxOffset
+        self._minOffset = minOffset
+        self._spanCM = spanCM
     }
 
     public var body: some View {
         GeometryReader { geo in
+            let visibleHeight = geo.size.height
+            let scale :Double = visibleHeight / spanCM
+            let totalControlHeight: Double = 300 * scale
+
             ZStack {
-                FlywheelTrack(angle: angle, tickSpacing: tickSpacing, tickCount: tickCount)
-                    .stroke(Color.white.opacity(0.8), lineWidth: 2)
-                    .frame(width: width, height: height)
-                    .background(Color.black.opacity(0.4).cornerRadius(10))
-                    .mask(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: .clear, location: 0.0),
-                                .init(color: .black, location: 0.2),
-                                .init(color: .black, location: 0.8),
-                                .init(color: .clear, location: 1.0)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
+                if let image = trackImage {
+                    image
+                        .resizable()
+                        .frame( height: totalControlHeight) // ruler skin height
+                        .offset(y: {
+                            let valueDisplay = position.truncatingRemainder(dividingBy: 100.0)
+                            let valueShow = valueDisplay + 100.0
+                            let offsetPX = -1 * (valueDisplay + 50) * scale
+                            let testedOffsetPX = (offsetPX > (totalControlHeight * (-1)) ? offsetPX + (scale * 100) : offsetPX)
+                            return testedOffsetPX
+                        }())
+                        .transaction { $0.animation = nil } // Disable implicit animation
+                        .clipped()
+                } else {
+                    FlywheelTrack(angle: position, tickSpacing: tickSpacing, tickCount: tickCount)
+                        .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                }
             }
-            .frame(width: width, height: height)
+            .frame(width: geo.size.width, height: geo.size.height) // match parent frame
+            .background(Color.black.opacity(0.4).cornerRadius(10))
+            .mask(
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .black, location: 0.2),
+                        .init(color: .black, location: 0.8),
+                        .init(color: .clear, location: 1.0)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
             .contentShape(Rectangle())
             .gesture(
                 DragGesture()
@@ -58,11 +82,12 @@ public struct FlywheelControl: View {
                         let dragDelta = value.translation.height - lastTranslation
                         lastTranslation = value.translation.height
 
-                        angle += dragDelta
+                        let pixelsPerCm = visibleHeight / spanCM
+                        let cmPerPixelDrag = 1.0 / pixelsPerCm
+                        let newPosition = position + (-dragDelta) * cmPerPixelDrag
+                        position = min(max(newPosition, minOffset), maxOffset)
                         isDragging = true
                         performTickHapticIfNeeded()
-
-                        onDelta(CGFloat(dragDelta * 0.01))  // emit small delta
                     }
                     .onEnded { value in
                         isDragging = false
@@ -72,6 +97,7 @@ public struct FlywheelControl: View {
                         let predictedVelocity = finalDelta * 2
 
                         velocity = abs(predictedVelocity) < 5 ? 0 : predictedVelocity
+                        position = position.rounded(.toNearestOrAwayFromZero)
                     }
             )
             .onTapGesture {
@@ -81,7 +107,7 @@ public struct FlywheelControl: View {
                 #if os(iOS)
                 prepareHaptics()
                 #endif
-                runTimer()
+                runTimer(geo: geo)
             }
             .onDisappear {
                 timer?.invalidate()
@@ -100,7 +126,7 @@ public struct FlywheelControl: View {
 
     @State private var cancellable: AnyCancellable?
 
-    private func runTimer() {
+    private func runTimer(geo: GeometryProxy) {
         cancellable?.cancel()
         cancellable = Timer.publish(every: updateInterval, on: .main, in: .common)
             .autoconnect()
@@ -108,24 +134,34 @@ public struct FlywheelControl: View {
                 if isDragging { return }
 
                 if abs(velocity) > 0.1 {
-                    angle += velocity * updateInterval
-                    velocity *= 0.94
+                    let visibleHeight = geo.size.height
+                    let pixelsPerCm = visibleHeight / spanCM
+                    let cmPerPixelDrag = 1.0 / pixelsPerCm
+                    withAnimation(.none) {
+                        position += (-velocity * updateInterval) * cmPerPixelDrag
+                        position = min(max(position.rounded(.toNearestOrAwayFromZero), minOffset), maxOffset) // Clamp position
+                    }
+                    if position == minOffset || position == maxOffset {
+                        velocity = 0 // Stop spin at limits
+                        position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm
+                    }
 
-                    onDelta(CGFloat(velocity * 0.001))
+                    velocity *= 0.98
+
                     performTickHapticIfNeeded()
                 } else if velocity != 0 {
                     velocity = 0
+                    position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm
                 }
             }
     }
     
     @State private var isHapticsPrepared = false
-    
 
     private func performTickHapticIfNeeded() {
         guard isHapticsPrepared, let engine = engine else { return }
 
-        let currentTick = Int((angle / tickSpacing).rounded())
+        let currentTick = Int(position.rounded(.toNearestOrAwayFromZero))
         if currentTick != lastTick {
             lastTick = currentTick
 
@@ -158,9 +194,12 @@ public struct FlywheelControl: View {
 import SwiftUI
 
 #Preview("FlywheelControl Demo") {
-    FlywheelControl { delta in
-        print("Delta in preview: \(delta)")
-    }
+    FlywheelControl(
+        position: .constant(0.0),
+        maxOffset: .constant(150.0),
+        minOffset: .constant(-150.0),
+        spanCM: .constant(200.0)
+    )
     .frame(width: 60, height: 240)
     .padding()
 }

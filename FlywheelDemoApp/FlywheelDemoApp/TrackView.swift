@@ -9,17 +9,15 @@ import SwiftUI
 
 struct TrackView: View {
     let position: CGFloat
-    @Binding var maxOffset: CGFloat
+    @Binding var maxOffset: Double
+    @Binding var minOffset: Double
 
     var body: some View {
         GeometryReader { geo in
-            let width = geo.size.width
             let dotRadius: CGFloat = 10
-            let clampedPosition = min(max(position, -maxOffset), maxOffset)
-
-            Color.clear.onAppear {
-                maxOffset = width / 2 - dotRadius
-            }
+            let width = geo.size.width - dotRadius
+          
+            let displayPosition = width*(position-minOffset)/(maxOffset-minOffset) - width/2
 
             ZStack {
                 Rectangle()
@@ -30,8 +28,8 @@ struct TrackView: View {
                 Circle()
                     .fill(Color.accentColor)
                     .frame(width: dotRadius * 2, height: dotRadius * 2)
-                    .offset(x: clampedPosition)
-                    .animation(.easeOut(duration: 0.1), value: clampedPosition)
+                    .offset(x: displayPosition)
+                    .animation(.easeOut(duration: 0.1), value: displayPosition)
             }
         }
     }
