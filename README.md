@@ -1,4 +1,3 @@
-
 # FlywheelControl
 
 [![SwiftPM Compatible](https://img.shields.io/badge/SwiftPM-compatible-blue)](https://swiftpackageindex.com/aweiner42/FlywheelControl)
@@ -7,7 +6,7 @@
 A tactile, momentum-based radial control for SwiftUI — inspired by analog flywheels.  
 ![FlywheelControl Logo](Assets/FlywheelIcon.png)
 
-A SwiftUI-based, physics-inspired radial scroller for zoom, scrub, and value adjustments.  
+A SwiftUI-based, physics-inspired radial scroller for zooming, scrubbing, and precision value adjustments.  
 **FlywheelControl** mimics the feel of a real-world dial — complete with momentum, resistance, haptic feedback, and **pen-friendly input**.
 
 ---
@@ -26,6 +25,10 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 - 💥 Haptic ticks for tactile feedback  
 - 🎨 Fully SwiftUI and easy to customize  
 - 🧠 Decoupled: just emits `delta` values — you decide what to do with them  
+- 🚀 Smooth momentum decay and natural stopping behavior  
+- 🎨 Custom skin support: Apply your own ruler artwork for a fully branded experience  
+- 🛑 Clamp limits: minValue and maxValue must be > 0
+- 📏 spanCM defines visible range (must be > 0)
 
 ---
 
@@ -37,12 +40,12 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 
 1. Go to `File → Add Packages…`  
 2. Enter the URL: `https://github.com/aweiner42/FlywheelControl`  
-3. Choose the latest version (e.g., `1.0.0`)
+3. Choose the latest version (e.g., `1.1.0`)
 
 **Or add it to your `Package.swift`:**
 
 ```swift
-.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.0.0")
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.1.0")
 ```
 
 Then add the dependency to your target:
@@ -60,19 +63,22 @@ Import the module where needed:
 import FlywheelControl
 ```
 
+### 🖼 Adding a Custom Skin
+
+Place your ruler artwork (e.g., `RulerSkin.png`) in your app’s Asset Catalog (`Assets.xcassets`) and assign it the name `RulerSkin`. FlywheelControl will automatically load this image if present.
+
+The package includes a sample ruler skin (`DefaultRuler.png`). You can copy it into your app’s Asset Catalog and rename it `RulerSkin` for immediate use.
+
 ---
 
 ## 🎯 Example Integration
 
 ```swift
-let zoomManager = ZoomValueManager(
-    getZoom: { camera.position.z },
-    setZoom: { newZ in camera.position.z = newZ },
-    min: -50,
-    max: 50
-)
-
-FlywheelControl { delta in
+FlywheelControl(
+    minValue: -150,  // Negative ranges are supported
+    maxValue: 150,
+    spanCM: 20        // Must be > 0
+) { delta in
     zoomManager.adjustZoom(by: delta)
 }
 ```
@@ -99,7 +105,7 @@ FlywheelControl includes:
 
 ## 🔄 Try It Live
 
-Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to see the control in action.
+Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to explore the latest refinements including improved momentum physics and control skinning.
 
 ---
 
@@ -107,3 +113,5 @@ Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to see the 
 
 Alan Weiner • [SIME Corp](https://simecorp.net)    
 Inventor. Designer. Engineer. Collaborating with AI to shape intuitive interfaces.
+
+Version 1.1.0 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.

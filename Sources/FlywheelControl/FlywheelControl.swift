@@ -26,7 +26,7 @@ public struct FlywheelControl: View {
 
     let tickSpacing: Double = 20
     let tickCount = Int(180 / 10)
-    let updateInterval = 1.0 / 30.0
+    let updateInterval = 1.0 / 60.0
 
     public init(trackImage: Image? = nil, position: Binding<Double>, maxOffset: Binding<Double>, minOffset: Binding<Double>, spanCM: Binding<Double>) {
         self.trackImage = trackImage
@@ -40,7 +40,7 @@ public struct FlywheelControl: View {
         GeometryReader { geo in
             let visibleHeight = geo.size.height
             let scale :Double = visibleHeight / spanCM
-            let totalControlHeight: Double = 300 * scale
+            let totalControlHeight: Double = 300.0 * scale
 
             ZStack {
                 if let image = trackImage {
@@ -50,8 +50,8 @@ public struct FlywheelControl: View {
                         .offset(y: {
                             let valueDisplay = position.truncatingRemainder(dividingBy: 100.0)
                             let valueShow = valueDisplay + 100.0
-                            let offsetPX = -1 * (valueDisplay + 50) * scale
-                            let testedOffsetPX = (offsetPX > (totalControlHeight * (-1)) ? offsetPX + (scale * 100) : offsetPX)
+                            let offsetPX = -1 * (valueDisplay + 50.0) * scale
+                            let testedOffsetPX = (offsetPX > (totalControlHeight * (-1.0)) ? offsetPX + (scale * 100.0) : offsetPX)
                             return testedOffsetPX
                         }())
                         .transaction { $0.animation = nil } // Disable implicit animation
@@ -94,15 +94,24 @@ public struct FlywheelControl: View {
                         lastTranslation = 0
 
                         let finalDelta = value.predictedEndTranslation.height - value.translation.height
-                        let predictedVelocity = finalDelta * 2
+                        let dragSpeed = abs(finalDelta)
 
-                        velocity = abs(predictedVelocity) < 5 ? 0 : predictedVelocity
-                        position = position.rounded(.toNearestOrAwayFromZero)
+                        if dragSpeed < 5.0 {
+                            // Treat as gentle release: stop momentum
+                            velocity = 0
+                            position = position.rounded(.toNearestOrAwayFromZero)
+                        } else {
+                            // Treat as flick: allow momentum
+                            velocity = finalDelta * 2
+                        }
                     }
             )
-            .onTapGesture {
-                velocity = 0
-            }
+            .simultaneousGesture(
+                TapGesture()
+                    .onEnded {
+                        velocity = 0 // stop momentum when tapped
+                    }
+            )
             .onAppear {
                 #if os(iOS)
                 prepareHaptics()
@@ -139,19 +148,19 @@ public struct FlywheelControl: View {
                     let cmPerPixelDrag = 1.0 / pixelsPerCm
                     withAnimation(.none) {
                         position += (-velocity * updateInterval) * cmPerPixelDrag
-                        position = min(max(position.rounded(.toNearestOrAwayFromZero), minOffset), maxOffset) // Clamp position
+                        position = min(max(position, minOffset), maxOffset) // Clamp but don’t round yet
                     }
                     if position == minOffset || position == maxOffset {
                         velocity = 0 // Stop spin at limits
                         position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm
                     }
 
-                    velocity *= 0.98
+                    velocity *= 0.9
 
                     performTickHapticIfNeeded()
-                } else if velocity != 0 {
+            } else if abs(velocity) < 0.01 {
                     velocity = 0
-                    position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm
+                    position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm when spin stops
                 }
             }
     }
