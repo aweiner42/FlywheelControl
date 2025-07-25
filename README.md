@@ -24,7 +24,7 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 - 📱 One-finger- and **Apple Pencil-friendly**  
 - 💥 Haptic ticks for tactile feedback  
 - 🎨 Fully SwiftUI and easy to customize  
-- 🧠 Decoupled: just emits `delta` values — you decide what to do with them  
+- 🧠 Binding-driven: tracks a zoom `position` with clamped min/max offsets and live span adjustments
 - 🚀 Smooth momentum decay and natural stopping behavior  
 - 🎨 Custom skin support: Apply your own ruler artwork for a fully branded experience  
 - 🛑 Clamp limits: minValue and maxValue must be > 0
@@ -74,12 +74,22 @@ The package includes a sample ruler skin (`DefaultRuler.png`). You can copy it i
 ## 🎯 Example Integration
 
 ```swift
-FlywheelControl(
-    minValue: -150,  // Negative ranges are supported
-    maxValue: 150,
-    spanCM: 20        // Must be > 0
-) { delta in
-    zoomManager.adjustZoom(by: delta)
+@State private var zoomPosition: Double = 0
+@State private var minZoom: Double = 1
+@State private var maxZoom: Double = 90
+@State private var zoomSpan: Double = 20
+
+var body: some View {
+    FlywheelControl(
+        trackImage: Image("RulerSkin"),
+        position: $zoomPosition,
+        maxOffset: $maxZoom,
+        minOffset: $minZoom,
+        spanCM: $zoomSpan
+    )
+    .onChange(of: zoomPosition) { newValue in
+        zoomManager.adjustZoom(by: CGFloat(newValue))
+    }
 }
 ```
 

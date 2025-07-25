@@ -160,7 +160,7 @@ public struct FlywheelControl: View {
                     performTickHapticIfNeeded()
             } else if abs(velocity) < 0.01 {
                     velocity = 0
-                    position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm when spin stops
+                  //  position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm when spin stops
                 }
             }
     }
