@@ -80,12 +80,12 @@ The package includes a sample ruler skin (`DefaultRuler.png`). You can copy it i
 @State private var zoomSpan: Double = 20
 
 var body: some View {
-    FlywheelControl(
-        trackImage: Image("RulerSkin"),
-        position: $zoomPosition,
-        maxOffset: $maxZoom,
-        minOffset: $minZoom,
-        spanCM: $zoomSpan
+   FlywheelControl(
+    trackImage: Image("RulerSkin"), // custom ruler skin from Assets
+    position: $zoomPosition,        // current scroll/zoom value
+    maxOffset: $maxZoom,            // maximum scroll value (must be > 0)
+    minOffset: $minZoom,            // minimum scroll value (must be > 0)
+    spanCM: $zoomSpan               // visible range in cm (must be > 0)
     )
     .onChange(of: zoomPosition) { newValue in
         zoomManager.adjustZoom(by: CGFloat(newValue))
