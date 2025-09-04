@@ -29,6 +29,7 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 - 🎨 Custom skin support: Apply your own ruler artwork for a fully branded experience  
 - 🛑 Clamp limits: minValue and maxValue must be > 0
 - 📏 spanCM defines visible range (must be > 0)
+- 🔓 Optional clamping: turn off min/max limits for free spinning in auto modes
 
 ---
 
@@ -85,7 +86,8 @@ var body: some View {
     position: $zoomPosition,        // current scroll/zoom value
     maxOffset: $maxZoom,            // maximum scroll value (must be > 0)
     minOffset: $minZoom,            // minimum scroll value (must be > 0)
-    spanCM: $zoomSpan               // visible range in cm (must be > 0)
+    spanCM: $zoomSpan,              // visible range in cm (must be > 0)
+    disableClampLimits: true
     )
     .onChange(of: zoomPosition) { newValue in
         zoomManager.adjustZoom(by: CGFloat(newValue))

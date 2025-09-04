@@ -11,6 +11,7 @@ import Combine
 
 public struct FlywheelControl: View {
     public var trackImage: Image?
+    public var disableClampLimits: Bool = false
 
     @Binding var position: Double
     @Binding var maxOffset: Double // passed from container
@@ -28,12 +29,13 @@ public struct FlywheelControl: View {
     let tickCount = Int(180 / 10)
     let updateInterval = 1.0 / 60.0
 
-    public init(trackImage: Image? = nil, position: Binding<Double>, maxOffset: Binding<Double>, minOffset: Binding<Double>, spanCM: Binding<Double>) {
+    public init(trackImage: Image? = nil, position: Binding<Double>, maxOffset: Binding<Double>, minOffset: Binding<Double>, spanCM: Binding<Double>, disableClampLimits: Bool = false) {
         self.trackImage = trackImage
         self._position = position
         self._maxOffset = maxOffset
         self._minOffset = minOffset
         self._spanCM = spanCM
+        self.disableClampLimits = disableClampLimits
     }
 
     public var body: some View {
@@ -85,7 +87,11 @@ public struct FlywheelControl: View {
                         let pixelsPerCm = visibleHeight / spanCM
                         let cmPerPixelDrag = 1.0 / pixelsPerCm
                         let newPosition = position + (-dragDelta) * cmPerPixelDrag
-                        position = min(max(newPosition, minOffset), maxOffset)
+                        if disableClampLimits {
+                            position = newPosition
+                        } else {
+                            position = min(max(newPosition, minOffset), maxOffset)
+                        }
                         isDragging = true
                         performTickHapticIfNeeded()
                     }
@@ -146,13 +152,16 @@ public struct FlywheelControl: View {
                     let visibleHeight = geo.size.height
                     let pixelsPerCm = visibleHeight / spanCM
                     let cmPerPixelDrag = 1.0 / pixelsPerCm
-                    withAnimation(.none) {
+                    if disableClampLimits {
+                        // No clamping, no snap on limits
                         position += (-velocity * updateInterval) * cmPerPixelDrag
-                        position = min(max(position, minOffset), maxOffset) // Clamp but don’t round yet
-                    }
-                    if position == minOffset || position == maxOffset {
-                        velocity = 0 // Stop spin at limits
-                        position = position.rounded(.toNearestOrAwayFromZero) // Snap to whole cm
+                    } else {
+                        position += (-velocity * updateInterval) * cmPerPixelDrag
+                        position = min(max(position, minOffset), maxOffset)
+                        if position == minOffset || position == maxOffset {
+                            velocity = 0
+                            position = position.rounded(.toNearestOrAwayFromZero)
+                        }
                     }
 
                     velocity *= 0.9
