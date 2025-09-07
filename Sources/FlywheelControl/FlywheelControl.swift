@@ -87,7 +87,7 @@ public struct FlywheelControl: View {
                         let pixelsPerCm = visibleHeight / spanCM
                         let cmPerPixelDrag = 1.0 / pixelsPerCm
                         let newPosition = position + (-dragDelta) * cmPerPixelDrag
-                        if disableClampLimits {
+                        if effectiveClampDisabled {
                             position = newPosition
                         } else {
                             position = min(max(newPosition, minOffset), maxOffset)
@@ -122,7 +122,11 @@ public struct FlywheelControl: View {
                 #if os(iOS)
                 prepareHaptics()
                 #endif
+                effectiveClampDisabled = disableClampLimits
                 runTimer(geo: geo)
+            }
+            .onChange(of: disableClampLimits) { newValue in
+                effectiveClampDisabled = newValue
             }
             .onDisappear {
                 timer?.invalidate()
@@ -140,6 +144,7 @@ public struct FlywheelControl: View {
     }
 
     @State private var cancellable: AnyCancellable?
+    @State private var effectiveClampDisabled: Bool = false
 
     private func runTimer(geo: GeometryProxy) {
         cancellable?.cancel()
@@ -152,7 +157,7 @@ public struct FlywheelControl: View {
                     let visibleHeight = geo.size.height
                     let pixelsPerCm = visibleHeight / spanCM
                     let cmPerPixelDrag = 1.0 / pixelsPerCm
-                    if disableClampLimits {
+                    if effectiveClampDisabled {
                         // No clamping, no snap on limits
                         position += (-velocity * updateInterval) * cmPerPixelDrag
                     } else {
