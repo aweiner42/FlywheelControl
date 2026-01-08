@@ -3,6 +3,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.5] - 2026-01-08
+### Changed
+- Fixed Swift Playgrounds (macOS) demo behavior by ensuring bundled ruler artwork renders correctly
+- Clarified and corrected Playground demo constraints (non-zero min/max/span) so values update as expected
+
+### Notes
+- No API surface changes beyond documentation and demo correctness
+- No runtime behavior or control physics changes
+
 ## [1.2.4] - 2026-01-08
 ### Added
 - Bundled reference ruler artwork as a SwiftPM resource

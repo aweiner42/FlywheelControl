@@ -6,27 +6,46 @@
 //
 
 import SwiftUI
-import CoreHaptics
 import Combine
-
 import Foundation
+import CoreHaptics   // (fine to keep; you already gate usage)
+
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 /// Public access to FlywheelControl’s SwiftPM resource bundle (e.g. bundled ruler artwork).
 /// Client code (including Swift Playgrounds) should use this instead of referencing `Bundle.module` directly.
 public enum FlywheelControlResources {
-    /// The SwiftPM resource bundle for this module.
     public static let bundle: Bundle = {
         #if SWIFT_PACKAGE
         return Bundle.module
         #else
-        // Fallback if the module is embedded outside SwiftPM.
         return Bundle(for: BundleFinder.self)
         #endif
     }()
 
-    /// Convenience helper for the bundled demo ruler artwork.
-    public static func bundledRulerImage(named name: String = "combined_ruler_image") -> Image {
-        Image(name, bundle: bundle)
+    public static func bundledRulerImage(
+        named name: String = "combined_ruler_image",
+        ext: String = "jpeg"
+    ) -> Image {
+        guard let url = bundle.url(forResource: name, withExtension: ext) else {
+            return Image(systemName: "questionmark.square.dashed")
+        }
+
+        #if canImport(UIKit)
+        if let uiImage = UIImage(contentsOfFile: url.path) {
+            return Image(uiImage: uiImage)
+        }
+        #elseif canImport(AppKit)
+        if let nsImage = NSImage(contentsOf: url) {
+            return Image(nsImage: nsImage)
+        }
+        #endif
+
+        return Image(systemName: "questionmark.square.dashed")
     }
 
     private final class BundleFinder {}

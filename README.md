@@ -89,7 +89,7 @@ This is intended as a lightweight **DX front door** so engineers can feel inerti
 2. Add the package:
    - Tap **+** → **Swift Package**
    - Paste: `https://github.com/aweiner42/FlywheelControl`
-3. Replace `ContentView.swift` with the minimal demo below and run.
+3. Replace ContentView.swift with the minimal demo below (note the non-zero ranges) and run.
 
 ### Minimal Playground Demo
 
@@ -98,9 +98,9 @@ import SwiftUI
 import FlywheelControl
 
 struct ContentView: View {
-    @State private var value: Double = 0
+    @State private var value: Double = 1
     @State private var maxValue: Double = 150
-    @State private var minValue: Double = 0
+    @State private var minValue: Double = 1
     @State private var spanCM: Double = 100
 
     var body: some View {
@@ -109,7 +109,7 @@ struct ContentView: View {
                 .font(.headline)
 
             FlywheelControl(
-                trackImage: Image("combined_ruler_image", bundle: FlywheelControlResources.bundle),
+                trackImage: FlywheelControlResources.bundledRulerImage(),
                 position: $value,
                 maxOffset: $maxValue,
                 minOffset: $minValue,
@@ -122,7 +122,8 @@ struct ContentView: View {
 }
 ```
 
-The demo ruler artwork is bundled with the FlywheelControl package and loaded from the module’s resource bundle. In client code, use `FlywheelControlResources.bundle` (or `FlywheelControlResources.bundledRulerImage()`) instead of `Bundle.module`.
+The demo ruler artwork is bundled with the FlywheelControl package and loaded via a public resource accessor.
+When exploring the control, ensure `minOffset`, `maxOffset`, and `spanCM` are all greater than zero so the dial can move freely.
 
 ---
 
