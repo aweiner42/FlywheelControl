@@ -1,6 +1,16 @@
 # Changelog
 
+
 All notable changes to this project will be documented in this file.
+
+## [1.2.2] - 2026-01-08
+### Added
+- Official support for exploring FlywheelControl in **Swift Playgrounds on iPad** (no Xcode required).
+- Documentation and examples positioning Swift Playgrounds as a DX “front door” for SDK exploration.
+
+### Changed
+- Lowered Swift Package tools version to **5.10** to ensure compatibility with Swift Playgrounds on iPad.
+- Updated README and website documentation to include iPad Playground setup instructions.
 
 ## [1.1.0] - 2025-07-13
 ### Added

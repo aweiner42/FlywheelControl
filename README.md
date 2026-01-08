@@ -41,12 +41,12 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 
 1. Go to `File → Add Packages…`  
 2. Enter the URL: `https://github.com/aweiner42/FlywheelControl`  
-3. Choose the latest version (e.g., `1.1.0`)
+3. Choose the latest version (e.g., `1.2.2`)
 
 **Or add it to your `Package.swift`:**
 
 ```swift
-.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.1.0")
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.2.2")
 ```
 
 Then add the dependency to your target:
@@ -69,6 +69,61 @@ import FlywheelControl
 Place your ruler artwork (e.g., `RulerSkin.png`) in your app’s Asset Catalog (`Assets.xcassets`) and assign it the name `RulerSkin`. FlywheelControl will automatically load this image if present.
 
 The package includes a sample ruler skin (`DefaultRuler.png`). You can copy it into your app’s Asset Catalog and rename it `RulerSkin` for immediate use.
+
+---
+
+## 🧪 Explore on iPad with Swift Playgrounds (No Xcode)
+
+FlywheelControl can be explored interactively on an iPad using **Swift Playgrounds** — no Xcode required.
+This is intended as a lightweight **DX front door** so engineers can feel inertia and tuning before integrating the SDK into an app.
+
+### Requirements
+- Swift Playgrounds on iPad
+- FlywheelControl **v1.2.2+** (Playgrounds-compatible tools version)
+- iPad hardware (momentum/inertia works great; haptics are best on iPhone)
+
+### Steps
+1. Open **Swift Playgrounds** and create a new **App** (SwiftUI template).
+2. Add the package:
+   - Tap **+** → **Swift Package**
+   - Paste: `https://github.com/aweiner42/FlywheelControl`
+3. Add the demo asset image to the app’s resources and name it exactly:
+   - `combined_ruler_image`
+4. Replace `ContentView.swift` with the minimal demo below and run.
+
+### Minimal Playground Demo
+
+```swift
+import SwiftUI
+import FlywheelControl
+
+struct ContentView: View {
+    @State private var value: Double = 0
+    @State private var maxValue: Double = 150
+    @State private var minValue: Double = 0
+    @State private var spanCM: Double = 100
+
+    var body: some View {
+        VStack(spacing: 40) {
+            Text("Value: \(value, specifier: "%.2f") cm")
+                .font(.headline)
+
+            FlywheelControl(
+                trackImage: Image("combined_ruler_image"),
+                position: $value,
+                maxOffset: $maxValue,
+                minOffset: $minValue,
+                spanCM: $spanCM
+            )
+            .frame(width: 60, height: 240)
+        }
+        .padding()
+    }
+}
+```
+
+> Note: Momentum and inertia demonstrate perfectly on iPad.  
+> Haptics are best experienced on iPhone hardware.
 
 ---
 
@@ -126,4 +181,4 @@ Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to explore 
 Alan Weiner • [SIME Corp](https://simecorp.net)    
 Inventor. Designer. Engineer. Collaborating with AI to shape intuitive interfaces.
 
-Version 1.1.0 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.
+Version 1.2.2 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.
