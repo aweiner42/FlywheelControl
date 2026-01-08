@@ -120,7 +120,7 @@ public struct FlywheelControl: View {
                 )
             )
             .contentShape(Rectangle())
-            .gesture(
+            .highPriorityGesture(
                 DragGesture()
                     .onChanged { value in
                         let dragDelta = value.translation.height - lastTranslation

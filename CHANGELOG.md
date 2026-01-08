@@ -1,7 +1,18 @@
 # Changelog
 
 
+
 All notable changes to this project will be documented in this file.
+
+## [1.2.6] - 2026-01-08
+### Changed
+- Fixed drag gesture handling in Swift Playgrounds (macOS and iPadOS) by using high-priority gesture recognition.
+- Ensured FlywheelControl is fully interactive when explored via Swift Playgrounds without Xcode.
+
+### Notes
+- No API surface changes.
+- No changes to control physics, rendering, or inertia behavior.
+- Existing Xcode-based apps continue to behave identically.
 
 ## [1.2.5] - 2026-01-08
 ### Changed

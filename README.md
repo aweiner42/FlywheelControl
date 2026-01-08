@@ -81,7 +81,7 @@ This is intended as a lightweight **DX front door** so engineers can feel inerti
 
 ### Requirements
 - Swift Playgrounds on iPad
-- FlywheelControl **v1.2.4+** (Playgrounds-compatible tools version)
+- FlywheelControl v1.2.6+ (includes Swift Playgrounds gesture fix)
 - iPad hardware (momentum/inertia works great; haptics are best on iPhone)
 
 ### Steps
@@ -98,10 +98,10 @@ import SwiftUI
 import FlywheelControl
 
 struct ContentView: View {
-    @State private var value: Double = 1
+    @State private var value: Double = 0        // current value in cm
     @State private var maxValue: Double = 150
-    @State private var minValue: Double = 1
-    @State private var spanCM: Double = 100
+    @State private var minValue: Double = 0
+    @State private var spanCM: Double = 20       // visible range in cm
 
     var body: some View {
         VStack(spacing: 40) {
@@ -121,6 +121,8 @@ struct ContentView: View {
     }
 }
 ```
+This configuration mirrors the bundled demo app and is recommended for first-time exploration.
+Use smaller `spanCM` values (e.g. 20) for a tactile feel. Drag interaction works in Swift Playgrounds on iPad and macOS starting in v1.2.6.
 
 The demo ruler artwork is bundled with the FlywheelControl package and loaded via a public resource accessor.
 When exploring the control, ensure `minOffset`, `maxOffset`, and `spanCM` are all greater than zero so the dial can move freely.
