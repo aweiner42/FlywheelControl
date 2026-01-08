@@ -70,6 +70,8 @@ Place your ruler artwork (e.g., `RulerSkin.png`) in your app’s Asset Catalog (
 
 The package includes a sample ruler skin (`DefaultRuler.png`). You can copy it into your app’s Asset Catalog and rename it `RulerSkin` for immediate use.
 
+When using Swift Playgrounds, FlywheelControl automatically falls back to its bundled reference skin unless a custom track image is explicitly provided.
+
 ---
 
 ## 🧪 Explore on iPad with Swift Playgrounds (No Xcode)
@@ -87,9 +89,7 @@ This is intended as a lightweight **DX front door** so engineers can feel inerti
 2. Add the package:
    - Tap **+** → **Swift Package**
    - Paste: `https://github.com/aweiner42/FlywheelControl`
-3. Add the demo asset image to the app’s resources and name it exactly:
-   - `combined_ruler_image`
-4. Replace `ContentView.swift` with the minimal demo below and run.
+3. Replace `ContentView.swift` with the minimal demo below and run.
 
 ### Minimal Playground Demo
 
@@ -109,7 +109,7 @@ struct ContentView: View {
                 .font(.headline)
 
             FlywheelControl(
-                trackImage: Image("combined_ruler_image"),
+                trackImage: Image("combined_ruler_image", bundle: .module),
                 position: $value,
                 maxOffset: $maxValue,
                 minOffset: $minValue,
@@ -122,8 +122,8 @@ struct ContentView: View {
 }
 ```
 
-> Note: Momentum and inertia demonstrate perfectly on iPad.  
-> Haptics are best experienced on iPhone hardware.
+The demo ruler artwork is bundled with the FlywheelControl package and loaded from the module’s resource bundle.
+No additional assets are required to explore the control in Swift Playgrounds.
 
 ---
 
