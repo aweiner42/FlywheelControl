@@ -41,12 +41,12 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 
 1. Go to `File → Add Packages…`  
 2. Enter the URL: `https://github.com/aweiner42/FlywheelControl`  
-3. Choose the latest version (e.g., `1.2.2`)
+3. Choose the latest version (e.g., `1.2.4`)
 
 **Or add it to your `Package.swift`:**
 
 ```swift
-.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.2.2")
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.2.4")
 ```
 
 Then add the dependency to your target:
@@ -81,7 +81,7 @@ This is intended as a lightweight **DX front door** so engineers can feel inerti
 
 ### Requirements
 - Swift Playgrounds on iPad
-- FlywheelControl **v1.2.2+** (Playgrounds-compatible tools version)
+- FlywheelControl **v1.2.4+** (Playgrounds-compatible tools version)
 - iPad hardware (momentum/inertia works great; haptics are best on iPhone)
 
 ### Steps
@@ -109,7 +109,7 @@ struct ContentView: View {
                 .font(.headline)
 
             FlywheelControl(
-                trackImage: Image("combined_ruler_image", bundle: .module),
+                trackImage: Image("combined_ruler_image", bundle: FlywheelControlResources.bundle),
                 position: $value,
                 maxOffset: $maxValue,
                 minOffset: $minValue,
@@ -122,8 +122,7 @@ struct ContentView: View {
 }
 ```
 
-The demo ruler artwork is bundled with the FlywheelControl package and loaded from the module’s resource bundle.
-No additional assets are required to explore the control in Swift Playgrounds.
+The demo ruler artwork is bundled with the FlywheelControl package and loaded from the module’s resource bundle. In client code, use `FlywheelControlResources.bundle` (or `FlywheelControlResources.bundledRulerImage()`) instead of `Bundle.module`.
 
 ---
 
@@ -181,4 +180,4 @@ Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to explore 
 Alan Weiner • [SIME Corp](https://simecorp.net)    
 Inventor. Designer. Engineer. Collaborating with AI to shape intuitive interfaces.
 
-Version 1.2.2 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.
+Version 1.2.4 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.

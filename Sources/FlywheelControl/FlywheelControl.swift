@@ -9,6 +9,29 @@ import SwiftUI
 import CoreHaptics
 import Combine
 
+import Foundation
+
+/// Public access to FlywheelControl’s SwiftPM resource bundle (e.g. bundled ruler artwork).
+/// Client code (including Swift Playgrounds) should use this instead of referencing `Bundle.module` directly.
+public enum FlywheelControlResources {
+    /// The SwiftPM resource bundle for this module.
+    public static let bundle: Bundle = {
+        #if SWIFT_PACKAGE
+        return Bundle.module
+        #else
+        // Fallback if the module is embedded outside SwiftPM.
+        return Bundle(for: BundleFinder.self)
+        #endif
+    }()
+
+    /// Convenience helper for the bundled demo ruler artwork.
+    public static func bundledRulerImage(named name: String = "combined_ruler_image") -> Image {
+        Image(name, bundle: bundle)
+    }
+
+    private final class BundleFinder {}
+}
+
 public struct FlywheelControl: View {
     public var trackImage: Image?
     public var disableClampLimits: Bool = false

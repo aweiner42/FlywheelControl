@@ -3,17 +3,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.3] - 2026-01-08
+## [1.2.4] - 2026-01-08
 ### Added
 - Bundled reference ruler artwork as a SwiftPM resource
 - Zero-setup exploration in Swift Playgrounds on iPad and macOS
 
 ### Changed
-- Demo code now loads track image from Bundle.module
+- Demo code now loads bundled track image via public FlywheelControlResources accessor (Playgrounds-safe)
 - Documentation updated to reflect self-contained SDK exploration
 
 ### Notes
-- No API or runtime behavior changes
+- Introduces a small public API addition (FlywheelControlResources) for SDK resource access
+- No runtime behavior or control physics changes
 
 ## [1.2.2] - 2026-01-08
 ### Added
