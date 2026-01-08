@@ -86,6 +86,41 @@ public struct FlywheelControl: View {
             let scale :Double = visibleHeight / spanCM
             let totalControlHeight: Double = 300.0 * scale
 
+            // Drag gesture extracted so we can attach it to a clear overlay hit-target.
+            // This avoids Swift Playgrounds/macOS hit-testing quirks when the control is masked.
+            let dragGesture = DragGesture()
+                .onChanged { value in
+                    let dragDelta = value.translation.height - lastTranslation
+                    lastTranslation = value.translation.height
+
+                    let pixelsPerCm = visibleHeight / spanCM
+                    let cmPerPixelDrag = 1.0 / pixelsPerCm
+                    let newPosition = position + (-dragDelta) * cmPerPixelDrag
+                    if effectiveClampDisabled {
+                        position = newPosition
+                    } else {
+                        position = min(max(newPosition, minOffset), maxOffset)
+                    }
+                    isDragging = true
+                    performTickHapticIfNeeded()
+                }
+                .onEnded { value in
+                    isDragging = false
+                    lastTranslation = 0
+
+                    let finalDelta = value.predictedEndTranslation.height - value.translation.height
+                    let dragSpeed = abs(finalDelta)
+
+                    if dragSpeed < 5.0 {
+                        // Treat as gentle release: stop momentum
+                        velocity = 0
+                        position = position.rounded(.toNearestOrAwayFromZero)
+                    } else {
+                        // Treat as flick: allow momentum
+                        velocity = finalDelta * 2
+                    }
+                }
+
             ZStack {
                 if let image = trackImage {
                     image
@@ -120,39 +155,10 @@ public struct FlywheelControl: View {
                 )
             )
             .contentShape(Rectangle())
-            .highPriorityGesture(
-                DragGesture()
-                    .onChanged { value in
-                        let dragDelta = value.translation.height - lastTranslation
-                        lastTranslation = value.translation.height
-
-                        let pixelsPerCm = visibleHeight / spanCM
-                        let cmPerPixelDrag = 1.0 / pixelsPerCm
-                        let newPosition = position + (-dragDelta) * cmPerPixelDrag
-                        if effectiveClampDisabled {
-                            position = newPosition
-                        } else {
-                            position = min(max(newPosition, minOffset), maxOffset)
-                        }
-                        isDragging = true
-                        performTickHapticIfNeeded()
-                    }
-                    .onEnded { value in
-                        isDragging = false
-                        lastTranslation = 0
-
-                        let finalDelta = value.predictedEndTranslation.height - value.translation.height
-                        let dragSpeed = abs(finalDelta)
-
-                        if dragSpeed < 5.0 {
-                            // Treat as gentle release: stop momentum
-                            velocity = 0
-                            position = position.rounded(.toNearestOrAwayFromZero)
-                        } else {
-                            // Treat as flick: allow momentum
-                            velocity = finalDelta * 2
-                        }
-                    }
+            .overlay(
+                Color.clear
+                    .contentShape(Rectangle())
+                    .highPriorityGesture(dragGesture)
             )
             .simultaneousGesture(
                 TapGesture()

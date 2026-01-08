@@ -27,7 +27,7 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 - 🧠 Binding-driven: tracks a zoom `position` with clamped min/max offsets and live span adjustments
 - 🚀 Smooth momentum decay and natural stopping behavior  
 - 🎨 Custom skin support: Apply your own ruler artwork for a fully branded experience  
-- 🛑 Clamp limits: minValue and maxValue must be > 0
+- 🛑 Clamp limits: minValue and maxValue must be ≥ 0
 - 📏 spanCM defines visible range (must be > 0)
 - 🔓 Optional clamping: turn off min/max limits for free spinning in auto modes
 
@@ -41,12 +41,12 @@ So we built a **rotary-style control** that works with a **finger or stylus**, a
 
 1. Go to `File → Add Packages…`  
 2. Enter the URL: `https://github.com/aweiner42/FlywheelControl`  
-3. Choose the latest version (e.g., `1.2.4`)
+3. Choose the latest version (e.g., `1.2.7`)
 
 **Or add it to your `Package.swift`:**
 
 ```swift
-.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.2.4")
+.package(url: "https://github.com/aweiner42/FlywheelControl.git", from: "1.2.7")
 ```
 
 Then add the dependency to your target:
@@ -78,10 +78,11 @@ When using Swift Playgrounds, FlywheelControl automatically falls back to its bu
 
 FlywheelControl can be explored interactively on an iPad using **Swift Playgrounds** — no Xcode required.
 This is intended as a lightweight **DX front door** so engineers can feel inertia and tuning before integrating the SDK into an app.
+The Playground configuration intentionally mirrors the demo app defaults to avoid misconfiguration during first exploration.
 
 ### Requirements
 - Swift Playgrounds on iPad
-- FlywheelControl v1.2.6+ (includes Swift Playgrounds gesture fix)
+- FlywheelControl v1.2.7+ (includes Swift Playgrounds gesture fix)
 - iPad hardware (momentum/inertia works great; haptics are best on iPhone)
 
 ### Steps
@@ -121,8 +122,9 @@ struct ContentView: View {
     }
 }
 ```
+When no custom image is supplied, FlywheelControl uses its bundled reference ruler via FlywheelControlResources.
 This configuration mirrors the bundled demo app and is recommended for first-time exploration.
-Use smaller `spanCM` values (e.g. 20) for a tactile feel. Drag interaction works in Swift Playgrounds on iPad and macOS starting in v1.2.6.
+Use smaller `spanCM` values (e.g. 20) for a tactile feel. Drag interaction works in Swift Playgrounds on iPad and macOS starting in v1.2.7.
 
 The demo ruler artwork is bundled with the FlywheelControl package and loaded via a public resource accessor.
 When exploring the control, ensure `minOffset`, `maxOffset`, and `spanCM` are all greater than zero so the dial can move freely.
@@ -183,4 +185,4 @@ Clone this repo and open `FlywheelDemoApp/FlywheelDemoApp.xcodeproj` to explore 
 Alan Weiner • [SIME Corp](https://simecorp.net)    
 Inventor. Designer. Engineer. Collaborating with AI to shape intuitive interfaces.
 
-Version 1.2.4 includes performance tuning, refined gesture handling, and support for custom ruler skins with clamped value ranges.
+Version 1.2.7 includes improved Swift Playgrounds drag reliability, refined gesture handling, and support for custom ruler skins.

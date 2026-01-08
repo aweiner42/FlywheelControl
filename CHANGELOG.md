@@ -2,7 +2,18 @@
 
 
 
+
 All notable changes to this project will be documented in this file.
+
+## [1.2.7] - 2026-01-08
+### Changed
+- Fixed unreliable drag interaction in Swift Playgrounds (macOS and iPadOS) by attaching the drag gesture to a clear overlay hit target (mask-safe).
+- Ensured FlywheelControl responds consistently to drag gestures during Playground-based exploration.
+
+### Notes
+- No API surface changes.
+- No changes to control physics, inertia, or visual behavior.
+- Existing Xcode-based apps continue to behave identically.
 
 ## [1.2.6] - 2026-01-08
 ### Changed
@@ -48,7 +59,7 @@ All notable changes to this project will be documented in this file.
 ## [1.1.0] - 2025-07-13
 ### Added
 - Custom ruler skin support using `RulerSkin` and Assets.xcassets.
-- Configurable clamp limits with `minValue` and `maxValue` (must be > 0).
+- Configurable clamp limits with `minValue` and `maxValue` (must be ≥ 0).
 - Improved performance tuning and smoother gesture handling.
 - Updated README with usage examples and updated version notes.
 
